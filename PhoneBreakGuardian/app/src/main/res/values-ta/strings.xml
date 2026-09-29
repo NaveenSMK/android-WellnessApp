@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Phone Break Guardian</string>
+    <string name="title">Phone Break Guardian</string>
+    <string name="subtitle">30 நிமிட இடைவேளை நினைவூட்டல் • தமிழ் + ஆங்கிலம்</string>
+    <string name="usage_access">Usage Access அனுமதி</string>
+    <string name="overlay_access">மற்ற செயலிகளுக்கு மேல் காட்ட அனுமதி</string>
+    <string name="start_monitoring">கண்காணிப்பை தொடங்கு</string>
+    <string name="monitoring">கண்காணிப்பு செயல்பாட்டில் உள்ளது</string>
+    <string name="settings_note">YouTube, Instagram, விளையாட்டுகள் மற்றும் உலாவிகள் உள்ளிட்ட செயலிகளில் முன்புற பயன்பாட்டு நேரத்தை கணக்கிடுகிறது.</string>
+</resources>
