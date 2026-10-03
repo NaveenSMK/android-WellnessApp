@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Phone Break Guardian</string>
+    <string name="title">Phone Break Guardian</string>
+    <string name="subtitle">30-minute break reminder • English + Tamil</string>
+    <string name="usage_access">Grant Usage Access</string>
+    <string name="overlay_access">Grant Display Over Other Apps</string>
+    <string name="start_monitoring">Start Monitoring</string>
+    <string name="monitoring">Monitoring is active</string>
+    <string name="settings_note">The app counts foreground phone use across apps such as YouTube, Instagram, games and browsers.</string>
+</resources>
