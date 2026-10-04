@@ -19,6 +19,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Add Android cmdline-tools to PATH
+        run: echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+
       - name: Accept SDK licenses and install required packages
         run: |
           yes | sdkmanager --licenses || true
@@ -35,5 +38,5 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MobileUseWellness-apk
+          name: MobileWellnessApp-apk
           path: app/build/outputs/apk/debug/app-debug.apk
