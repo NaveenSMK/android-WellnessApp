@@ -3,8 +3,15 @@
     <string name="title">Phone Break Guardian</string>
     <string name="subtitle">30-minute break reminder • English + Tamil</string>
     <string name="usage_access">Grant Usage Access</string>
-    <string name="overlay_access">Grant Display Over Other Apps</string>
+    <string name="overlay_access">Grant Full-Screen Alerts</string>
     <string name="start_monitoring">Start Monitoring</string>
+    <string name="stop_monitoring">Stop Monitoring</string>
     <string name="monitoring">Monitoring is active</string>
+    <string name="need_usage_access">Usage Access permission is required before monitoring can start</string>
+    <string name="need_notifications">Notification permission is required to show break alerts</string>
+    <string name="monitoring_notification">Monitoring phone use</string>
+    <string name="alert_title_break">🛑 Time for a break</string>
+    <string name="alert_title_dark">🌙 Please turn on a light</string>
+    <string name="alert_body">Tap to open Phone Break Guardian</string>
     <string name="settings_note">The app counts foreground phone use across apps such as YouTube, Instagram, games and browsers.</string>
 </resources>

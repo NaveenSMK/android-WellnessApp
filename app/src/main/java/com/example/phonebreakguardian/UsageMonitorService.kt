@@ -6,6 +6,7 @@ import android.content.*
 import android.hardware.*
 import android.os.*
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import java.util.*
 
 class UsageMonitorService : Service() {
@@ -16,6 +17,13 @@ class UsageMonitorService : Service() {
     private var darkWarningShown = false
     private var sensor: Sensor? = null
     private var lightValue = Float.MAX_VALUE
+
+    companion object {
+        private const val ONGOING_CHANNEL = "guardian"
+        private const val ALERT_CHANNEL = "guardian_alerts"
+        private const val ONGOING_NOTIFICATION_ID = 1001
+        private const val ALERT_NOTIFICATION_ID = 1002
+    }
 
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(e: SensorEvent) { lightValue = e.values[0] }
@@ -31,10 +39,10 @@ class UsageMonitorService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        createChannel()
-        startForeground(1001, NotificationCompat.Builder(this, "guardian")
-            .setContentTitle("Phone Break Guardian")
-            .setContentText("Monitoring phone use")
+        createChannels()
+        startForeground(ONGOING_NOTIFICATION_ID, NotificationCompat.Builder(this, ONGOING_CHANNEL)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(getString(R.string.monitoring_notification))
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setOngoing(true).build())
 
@@ -74,17 +82,47 @@ class UsageMonitorService : Service() {
     }
 
     private fun launchBreak(night: Boolean) {
-        val i = Intent(this, BreakActivity::class.java)
+        // Launching an Activity straight from a background service is blocked
+        // on modern Android. Instead, post a high-priority notification with a
+        // full-screen intent: the OS-recommended pattern for alarm/call-style
+        // alerts, which reliably opens BreakActivity even if the permission
+        // isn't granted (it just falls back to a tappable heads-up notification).
+        val contentIntent = Intent(this, BreakActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             .putExtra("night", night)
-        startActivity(i)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, if (night) 1 else 0, contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val title = if (night) getString(R.string.alert_title_dark) else getString(R.string.alert_title_break)
+
+        val notification = NotificationCompat.Builder(this, ALERT_CHANNEL)
+            .setContentTitle(title)
+            .setContentText(getString(R.string.alert_body))
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setFullScreenIntent(pendingIntent, true)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        // NotificationManagerCompat.notify() silently no-ops if POST_NOTIFICATIONS
+        // isn't granted (Android 13+) rather than crashing, so this is always safe.
+        NotificationManagerCompat.from(this).notify(ALERT_NOTIFICATION_ID, notification)
     }
 
-    private fun createChannel() {
+    private fun createChannels() {
         if (Build.VERSION.SDK_INT >= 26) {
-            val c = NotificationChannel("guardian", "Phone Break Guardian",
-                NotificationManager.IMPORTANCE_LOW)
-            getSystemService(NotificationManager::class.java).createNotificationChannel(c)
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.createNotificationChannel(
+                NotificationChannel(ONGOING_CHANNEL, "Phone Break Guardian", NotificationManager.IMPORTANCE_LOW)
+            )
+            nm.createNotificationChannel(
+                NotificationChannel(ALERT_CHANNEL, "Break Alerts", NotificationManager.IMPORTANCE_HIGH)
+            )
         }
     }
 
